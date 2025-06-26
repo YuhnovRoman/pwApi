@@ -1,13 +1,27 @@
 import { test } from "@playwright/test";
 
-export class ChallengeCreatePage {
+export class ChallengeUpdatePage {
     constructor(request) {
         this.request = request;
     };
-
-    async postCreate(token, title, description, status) {
+    
+    async postUpdate(token, id, title ) {
         return test.step("Создание задания", async () => {
-            const RESPONSE = await this.request.post("/todos", {
+            const RESPONSE = await this.request.post(`/todos/${id}`, {
+                headers: {
+                    "X-Challenger": token,
+                },
+                data: {
+                    title: `${title}`,
+                }
+            });
+            return RESPONSE;
+        });
+    };
+
+    async putUpdate(token, id, title, description, status) {
+        return test.step("Создание задания через PUT", async () => {
+            const RESPONSE = await this.request.put(`/todos/${id}`, {
                 headers: {
                     "X-Challenger": token,
                 },
@@ -21,33 +35,29 @@ export class ChallengeCreatePage {
         });
     };
 
-    async postCreateUnrecognized(token) {
-        return test.step("Создание задания c невалидным полем", async () => {
-            const RESPONSE = await this.request.post("/todos", {
-                headers: {
-                    "X-Challenger": token,
-                },
-                data: {
-                    title: "qwerty",
-                    doneStatus: true,
-                    description: "qwerty",
-                    UnrecognizedField: "123"
-                }
-            });
-            return RESPONSE;
-        });
-    };
-
-    async putCreate(token, id) {
+    async putUpdateNoTitle(token, id) {
         return test.step("Создание задания через PUT", async () => {
             const RESPONSE = await this.request.put(`/todos/${id}`, {
                 headers: {
                     "X-Challenger": token,
                 },
                 data: {
-                    title: "qwerty",
-                    doneStatus: true,
-                    description: "qwerty",
+                    description: "123",
+                }
+            });
+            return RESPONSE;
+        });
+    };
+
+    async putUpdateId(token, id) {
+        return test.step("Создание задания через PUT", async () => {
+            const RESPONSE = await this.request.put(`/todos/${id}`, {
+                headers: {
+                    "X-Challenger": token,
+                },
+                data: {
+                    id: 0,
+                    description: "123",
                 }
             });
             return RESPONSE;
