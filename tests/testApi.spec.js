@@ -73,8 +73,10 @@ test.describe("Просмотр заданий", () => {
         tag: "@Get",
     }, async ({ api }) => {
         const RESPONSE = await api.challengeView.getSpecificId(token, 0);
+        const BODY = await RESPONSE.json();
 
         await expect(RESPONSE.status()).toBe(404);
+        await expect(BODY.errorMessages).toEqual(['Could not find an instance with todos/0']);
     });
 
     test("Поверка фильтрации заданий через параметры", {
