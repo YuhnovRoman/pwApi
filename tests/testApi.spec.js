@@ -439,7 +439,7 @@ test.describe("Проверка статус кодов", async () => {
     });
 });
 
-test.describe("Удаление конкретного задания", async () => {
+test.describe("Удаление задания", async () => {
     test.beforeAll(async ({ api }) => {
         token = await api.challengeStart.post();
     });
