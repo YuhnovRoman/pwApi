@@ -333,6 +333,86 @@ test.describe("Изменение заданий", async () => {
         await expect(RESPONSE.status()).toBe(400);
         await expect(BODY.errorMessages).toEqual([`Can not amend id from ${RANDOM_ID} to 0`]);
     });
+
+    test("Обновление несуществующего задания через PUT", {
+        tag: "@UpdateChallenges",
+        tag: "@Put"
+    }, async ({ api }) => {
+        const TODO_DATA = new TodoBuilder()
+            .generateTitle(10)
+            .generateDescription(50)
+            .generate();
+        const RESPONSE = await api.challengeUpdate.putUpdate(token, 0, TODO_DATA.title, TODO_DATA.description, true);
+        const BODY = await RESPONSE.json();
+
+        console.log(BODY);
+        await expect(RESPONSE.status()).toBe(400);
+        await expect(BODY.errorMessages).toEqual([`Cannot create todo with PUT due to Auto fields id`]);
+    });
+
+    test("Изменение заголовка задания через PUT на слишком длинный заголовок", {
+        tag: "@UpdateChallenges",
+        tag: "@Put"
+    }, async ({ api }) => {
+        const TODO_DATA = new TodoBuilder()
+            .generateTitle(51)
+            .generateDescription(50)
+            .generate();
+        const ID = await api.challengeView.getChallengeListId();
+        const RANDOM_ID = Math.floor(Math.random() * (ID.length - 1));
+        const RESPONSE = await api.challengeUpdate.putUpdate(token, RANDOM_ID, TODO_DATA.title, TODO_DATA.description, true);
+        const BODY = await RESPONSE.json();
+
+        await expect(RESPONSE.status()).toBe(400);
+        await expect(BODY.errorMessages).toEqual([`Failed Validation: Maximum allowable length exceeded for title - maximum allowed is 50`]);
+    });
+
+    test("Изменение описания задания через PUT на слишком длинное описание", {
+        tag: "@UpdateChallenges",
+        tag: "@Put"
+    }, async ({ api }) => {
+        const TODO_DATA = new TodoBuilder()
+            .generateTitle(10)
+            .generateDescription(5001)
+            .generate();
+        const ID = await api.challengeView.getChallengeListId();
+        const RANDOM_ID = Math.floor(Math.random() * (ID.length - 1));
+        const RESPONSE = await api.challengeUpdate.putUpdate(token, RANDOM_ID, TODO_DATA.title, TODO_DATA.description, true);
+        const BODY = await RESPONSE.json();
+
+        await expect(RESPONSE.status()).toBe(413);
+        await expect(BODY.errorMessages).toEqual([`Error: Request body too large, max allowed is 5000 bytes`]);
+    });
+
+    test("Изменение статуса задания через PUT на невалидный тип", {
+        tag: "@UpdateChallenges",
+        tag: "@Put"
+    }, async ({ api }) => {
+        const TODO_DATA = new TodoBuilder()
+            .generateTitle(10)
+            .generateDescription(50)
+            .generate();
+        const ID = await api.challengeView.getChallengeListId();
+        const RANDOM_ID = Math.floor(Math.random() * (ID.length - 1));
+        const RESPONSE = await api.challengeUpdate.putUpdate(token, RANDOM_ID, TODO_DATA.title, TODO_DATA.description, "0");
+        const BODY = await RESPONSE.json();
+
+        await expect(RESPONSE.status()).toBe(400);
+        await expect(BODY.errorMessages).toEqual([`Failed Validation: doneStatus : 0 does not match type BOOLEAN (true, false)`]);
+    });
+
+    test("Изменение задания через PUT с добавлением нового поля", {
+        tag: "@UpdateChallenges",
+        tag: "@Put"
+    }, async ({ api }) => {
+        const ID = await api.challengeView.getChallengeListId();
+        const RANDOM_ID = Math.floor(Math.random() * (ID.length - 1));
+        const RESPONSE = await api.challengeUpdate.putUpdateField(token, RANDOM_ID);
+        const BODY = await RESPONSE.json();
+
+        await expect(RESPONSE.status()).toBe(400);
+        await expect(BODY.errorMessages).toEqual([`Could not find field: field`]);
+    });
 });
 
 test.describe("Проверка статус кодов", async () => {

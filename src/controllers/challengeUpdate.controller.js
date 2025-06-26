@@ -6,7 +6,7 @@ export class ChallengeUpdatePage {
     };
     
     async postUpdate(token, id, title ) {
-        return test.step("Создание задания", async () => {
+        return test.step("обновление задания через POST", async () => {
             const RESPONSE = await this.request.post(`/todos/${id}`, {
                 headers: {
                     "X-Challenger": token,
@@ -20,7 +20,7 @@ export class ChallengeUpdatePage {
     };
 
     async putUpdate(token, id, title, description, status) {
-        return test.step("Создание задания через PUT", async () => {
+        return test.step("Обновление задания через PUT", async () => {
             const RESPONSE = await this.request.put(`/todos/${id}`, {
                 headers: {
                     "X-Challenger": token,
@@ -36,7 +36,7 @@ export class ChallengeUpdatePage {
     };
 
     async putUpdateNoTitle(token, id) {
-        return test.step("Создание задания через PUT", async () => {
+        return test.step("Обновление заголовка задания через PUT", async () => {
             const RESPONSE = await this.request.put(`/todos/${id}`, {
                 headers: {
                     "X-Challenger": token,
@@ -50,7 +50,7 @@ export class ChallengeUpdatePage {
     };
 
     async putUpdateId(token, id) {
-        return test.step("Создание задания через PUT", async () => {
+        return test.step("Изменение id задания через PUT", async () => {
             const RESPONSE = await this.request.put(`/todos/${id}`, {
                 headers: {
                     "X-Challenger": token,
@@ -58,6 +58,20 @@ export class ChallengeUpdatePage {
                 data: {
                     id: 0,
                     description: "123",
+                }
+            });
+            return RESPONSE;
+        });
+    };
+
+    async putUpdateField(token, id) {
+        return test.step("Изменение id задания через PUT", async () => {
+            const RESPONSE = await this.request.put(`/todos/${id}`, {
+                headers: {
+                    "X-Challenger": token,
+                },
+                data: {
+                    field: "123",
                 }
             });
             return RESPONSE;
